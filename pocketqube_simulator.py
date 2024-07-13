@@ -2,7 +2,7 @@ import serial
 import random
 import pandas as pd
 
-serial_port_1 = serial.Serial('/dev/pts/13')
+serial_port_1 = serial.Serial('/dev/pts/6')
 csv_data = pd.read_csv('datos_corregidos.csv')
 iteration = 0
 
@@ -77,6 +77,7 @@ ft = 0xEF
 while True:
     if serial_port_1.in_waiting > 0:
         data = serial_port_1.readline().decode('utf-8', errors='ignore').rstrip()
+        print(data)
 
         data_separared = data.split()
         if data_separared[0] == 'pq':
@@ -90,4 +91,5 @@ while True:
                     iteration += 1
                     break
         else:
+            print(data)
             print('nop')
