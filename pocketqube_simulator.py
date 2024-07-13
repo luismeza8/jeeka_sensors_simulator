@@ -3,27 +3,26 @@ import random
 import pandas as pd
 
 serial_port_1 = serial.Serial('/dev/pts/13')
-data = pd.read_csv('datos_corregidos.csv')
-
-#data.to_csv('datos_corregidos.csv', index=False, encoding='utf-8')
+csv_data = pd.read_csv('datos_corregidos.csv')
+iteration = 0
 
 def generate_orientation():
-    return [random.uniform(-20, 20), random.uniform(-20, 20), random.uniform(-20, 20)]
+    return csv_data['gx'].loc[iteration]
 
 def generate_altitude():
-    return random.randint(0, 500)
+    return csv_data['altura'].loc[iteration]
 
 def generate_velocity():
-    return random.randint(0, 120)
+    return csv_data[''].loc[iteration]
 
 def generate_acelerations():
-    return [random.uniform(-20, 20), random.uniform(-20, 20), random.uniform(-20, 20)]
+    return csv_data['ax'].loc[iteration]
 
 def generate_temperature():
-    return random.randint(0, 50)
+    return csv_data['temperatura'].loc[iteration]
 
 def generate_pressure():
-    return random.randint(1000, 1100)
+    return csv_data['presion'].loc[iteration]
 
 def generate_position():
     return [random.uniform(-40, 40), random.uniform(-40, 40)]
@@ -67,15 +66,15 @@ instructions = {
 }
 
 it = 0xFE
-l = None
 do = 0xCC
 dd = 0xDD
+l = None
 rssi = hex(random.randint(-120, -60))
 i = None
 m = None
 ft = 0xEF
 
-while 1:
+while True:
     if serial_port_1.in_waiting > 0:
         data = serial_port_1.readline().decode('utf-8', errors='ignore').rstrip()
 
@@ -88,6 +87,7 @@ while 1:
                     m = value()
                     response = f'{hex(it)} {hex(do)} {hex(dd)} {rssi} {i} {m} {hex(ft)}'
                     print(f'response: {response}\n')
+                    iteration += 1
                     break
         else:
             print('nop')
