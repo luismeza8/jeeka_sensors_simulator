@@ -6,14 +6,14 @@ class PocketQubeSimulator:
     simulated_data = pd.read_csv('datos_corregidos.csv')
     iteration_data = 0
     trama = {
-        'beginnig': 0xff,
-        'source_address': 0xcc,
-        'destine_address': None,
+        'beginnig': hex( 0xff ),
+        'source_address': hex( 0xcc ),
+        'destination_address': None,
         'lenght': None,
         'rssi': random.randrange(-120, -30),
-        'instruccion': None,
+        'instruction': None,
         'message': None,
-        'end': 0xef
+        'end': hex( 0xef )
     }
 
     def get_orientation(self):
@@ -101,3 +101,14 @@ class PocketQubeSimulator:
         'pha': get_phase,
         'all': generate_all_data,
     }
+
+    def comunication(self, address, instruction):
+        if instruction in self.instructions.keys():
+            self.trama['destination_address'] = address
+            self.trama['instruction'] = instruction
+            self.trama['message'] = self.instructions[instruction](self)
+            self.trama['lenght'] = hex(len(str( self.trama['message'] )))
+
+            return self.trama.values()
+
+        return 'Instruction unknown'
