@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 
 class PocketQubeSimulator:
@@ -5,14 +7,82 @@ class PocketQubeSimulator:
     iteration_data = 0
     trama = {
         'beginnig': 0xff,
-        'source_address': None,
+        'source_address': 0xcc,
         'destine_address': None,
         'lenght': None,
-        'rssi': None,
+        'rssi': random.randrange(-120, -30),
         'instruccion': None,
         'message': None,
         'end': 0xef
     }
+
+    def get_orientation(self):
+        gyro_x = self.simulated_data['gx'].loc[self.iteration_data]
+        gyro_y = self.simulated_data['gy'].loc[self.iteration_data]
+        gyro_z = self.simulated_data['gz'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return [gyro_x, gyro_y, gyro_z]
+
+    def get_altitude(self):
+        altitude = self.simulated_data['altura'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return altitude
+
+    def get_velocity(self):
+        return self.simulated_data[''].loc[self.iteration_data]
+
+    def get_acelerations(self):
+        aceleration_x = self.simulated_data['ax'].loc[self.iteration_data]
+        aceleration_y = self.simulated_data['ay'].loc[self.iteration_data]
+        aceleration_z = self.simulated_data['az'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return [aceleration_x, aceleration_y, aceleration_z]
+
+    def get_temperature(self):
+        temperature = self.simulated_data['temperatura'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return temperature
+
+    def get_pressure(self):
+        pressure = self.simulated_data['presion'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return pressure
+
+    def get_position(self):
+        return [random.uniform(-40, 40), random.uniform(-40, 40)]
+
+    def get_battery(self):
+        return random.randint(0, 100)
+
+    def get_phase(self):
+        return random.randint(0, 3)
+
+    def get_medition(self):
+        medition = self.simulated_data['medicion'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return medition
+
+    def get_time(self):
+        time = self.simulated_data['tiempo'].loc[self.iteration_data]
+        self.iteration_data += 1
+        return time
+
+    def generate_all_data(self):
+        self.iteration_data += 1
+        return [
+            self.get_medition(),
+            self.get_time(),
+            self.get_altitude(),
+            self.get_temperature(),
+            self.get_pressure(),
+            self.get_acelerations(), 
+            self.get_orientation(),
+            #generate_velocity(),
+            #generate_position(),
+            #generate_battery(),
+            #generate_phase()
+        ]
+
     instructions = {
         # Acctions
         'str': None, 
@@ -20,82 +90,14 @@ class PocketQubeSimulator:
         'rst': None,
         'fin': None,
         # Data
-        'ori': None,#generate_orientation,
-        'alt': None,#generate_altitude,
-        'vel': None,#generate_velocity,
-        'acl': None,#generate_acelerations,
-        'tem': None,#generate_temperature,
-        'pre': None,#generate_pressure,
-        'pos': None,#generate_position,
-        'bat': None,#generate_battery,
-        'pha': None,#generate_phase,
-        'all': None,#generate_all_data,
+        'ori': get_orientation,
+        'alt': get_altitude,
+        'vel': get_velocity,
+        'acl': get_acelerations,
+        'tem': get_temperature,
+        'pre': get_pressure,
+        'pos': get_position,
+        'bat': get_battery,
+        'pha': get_phase,
+        'all': generate_all_data,
     }
-
-#    def generate_orientation(self):
-#        return [self.csv_data['gx'].loc[self.iteration], self.csv_data['gy'].loc[self.iteration], self.csv_data['gz'].loc[self.iteration]]
-#
-#    def generate_altitude(self):
-#        return self.csv_data['altura'].loc[self.iteration]
-#
-#    def generate_velocity(self):
-#        return self.csv_data[''].loc[self.iteration]
-#
-#    def generate_acelerations(self):
-#        return [self.csv_data['ax'].loc[self.iteration], self.csv_data['ay'].loc[self.iteration], self.csv_data['az'].loc[self.iteration]]
-#
-#    def generate_temperature(self):
-#        return self.csv_data['temperatura'].loc[self.iteration]
-#
-#    def generate_pressure(self):
-#        return self.csv_data['presion'].loc[self.iteration]
-#
-#    def generate_position(self):
-#        return [random.uniform(-40, 40), random.uniform(-40, 40)]
-#
-#    def generate_battery(self):
-#        return random.randint(0, 100)
-#
-#    def generate_phase(self):
-#        return random.randint(0, 3)
-#
-#    def get_medition(self):
-#        return self.csv_data['medicion'].loc[self.iteration]
-#
-#    def get_time(self):
-#        return self.csv_data['tiempo'].loc[self.iteration]
-#
-#    def generate_all_data(self):
-#        self.iteration += 1
-#        return [
-#            self.get_medition(),
-#            self.get_time(),
-#            self.generate_altitude(),
-#            self.generate_temperature(),
-#            self.generate_pressure(),
-#            self.generate_acelerations(), 
-#            self.generate_orientation(),
-#            #generate_velocity(),
-#            #generate_position(),
-#            #generate_battery(),
-#            #generate_phase()
-#        ]
-#
-#    instructions = {
-#        # Acctions
-#        'str': None, 
-#        'abr': None,
-#        'rst': None,
-#        'fin': None,
-#        # Data
-#        'ori': generate_orientation,
-#        'alt': generate_altitude,
-#        'vel': generate_velocity,
-#        'acl': generate_acelerations,
-#        'tem': generate_temperature,
-#        'pre': generate_pressure,
-#        'pos': generate_position,
-#        'bat': generate_battery,
-#        'pha': generate_phase,
-#        'all': generate_all_data,
-#    }

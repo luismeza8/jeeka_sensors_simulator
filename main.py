@@ -1,6 +1,4 @@
-import serial
+import pocketqube_simulator
 
-serial = serial.Serial('/dev/pts/13', 9600)
-
-while 1:
-    print(serial.read())
+p = pocketqube_simulator.PocketQubeSimulator()
+print( p.get_orientation() )
