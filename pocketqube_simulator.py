@@ -6,14 +6,16 @@ class PocketQubeSimulator:
     simulated_data = pd.read_csv('datos_corregidos.csv')
     iteration_data = 0
     trama = {
-        'beginnig': hex( 0xff ),
-        'source_address': hex( 0xcc ),
+        'beginnig': hex(0xff),
+        'source_address': hex(0xcc),
         'destination_address': None,
         'lenght': None,
-        'rssi': random.randrange(-120, -30),
+        'rssi': None,
         'instruction': None,
+        'beginnig_message': hex(0xff),
         'message': None,
-        'end': hex( 0xef )
+        'end_message': hex(0xef),
+        'end': hex(0xef)
     }
 
     def get_orientation(self):
@@ -21,7 +23,7 @@ class PocketQubeSimulator:
         gyro_y = self.simulated_data['gy'].loc[self.iteration_data]
         gyro_z = self.simulated_data['gz'].loc[self.iteration_data]
         self.iteration_data += 1
-        return [gyro_x, gyro_y, gyro_z]
+        return f'{gyro_x}, {gyro_y}, {gyro_z}'
 
     def get_altitude(self):
         altitude = self.simulated_data['altura'].loc[self.iteration_data]
@@ -36,7 +38,7 @@ class PocketQubeSimulator:
         aceleration_y = self.simulated_data['ay'].loc[self.iteration_data]
         aceleration_z = self.simulated_data['az'].loc[self.iteration_data]
         self.iteration_data += 1
-        return [aceleration_x, aceleration_y, aceleration_z]
+        return f'{aceleration_x}, {aceleration_y}, {aceleration_z}'
 
     def get_temperature(self):
         temperature = self.simulated_data['temperatura'].loc[self.iteration_data]
@@ -107,8 +109,9 @@ class PocketQubeSimulator:
             self.trama['destination_address'] = address
             self.trama['instruction'] = instruction
             self.trama['message'] = self.instructions[instruction](self)
-            self.trama['lenght'] = hex(len(str( self.trama['message'] )))
+            self.trama['lenght'] = hex(len(str(self.trama['message'])))
+            self.trama['rssi'] = hex(random.randint(-120, -30))
 
-            return self.trama.values()
+            return list(self.trama.values())
 
         return 'Instruction unknown'
