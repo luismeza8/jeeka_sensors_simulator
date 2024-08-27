@@ -20,7 +20,7 @@ while True:
         'gyro_y': data[6][1],
         'gyro_z': data[6][2],
         'battery': 99,
-        }
+    }
 
     r = requests.get(url, body)
     print(r.text)

@@ -9,7 +9,7 @@ class PocketQubeSimulator:
         'beginnig': hex(0xff),
         'source_address': hex(0xcc),
         'destination_address': None,
-        'lenght': None,
+        'length': None,
         'rssi': None,
         'instruction': None,
         'beginnig_message': hex(0xff),
@@ -18,16 +18,18 @@ class PocketQubeSimulator:
         'end': hex(0xef)
     }
 
+    def next_iteration(self):
+        self.iteration_data += 1
+
+
     def get_orientation(self):
         gyro_x = self.simulated_data['gx'].loc[self.iteration_data]
         gyro_y = self.simulated_data['gy'].loc[self.iteration_data]
         gyro_z = self.simulated_data['gz'].loc[self.iteration_data]
-        self.iteration_data += 1
-        return f'{gyro_x}, {gyro_y}, {gyro_z}'
+        return [gyro_x, gyro_y, gyro_z]
 
     def get_altitude(self):
         altitude = self.simulated_data['altura'].loc[self.iteration_data]
-        self.iteration_data += 1
         return altitude
 
     def get_velocity(self):
@@ -37,17 +39,14 @@ class PocketQubeSimulator:
         aceleration_x = self.simulated_data['ax'].loc[self.iteration_data]
         aceleration_y = self.simulated_data['ay'].loc[self.iteration_data]
         aceleration_z = self.simulated_data['az'].loc[self.iteration_data]
-        self.iteration_data += 1
-        return f'{aceleration_x}, {aceleration_y}, {aceleration_z}'
+        return [aceleration_x, aceleration_y, aceleration_z]
 
     def get_temperature(self):
         temperature = self.simulated_data['temperatura'].loc[self.iteration_data]
-        self.iteration_data += 1
         return temperature
 
     def get_pressure(self):
         pressure = self.simulated_data['presion'].loc[self.iteration_data]
-        self.iteration_data += 1
         return pressure
 
     def get_position(self):
@@ -61,16 +60,13 @@ class PocketQubeSimulator:
 
     def get_medition(self):
         medition = self.simulated_data['medicion'].loc[self.iteration_data]
-        self.iteration_data += 1
         return medition
 
     def get_time(self):
         time = self.simulated_data['tiempo'].loc[self.iteration_data]
-        self.iteration_data += 1
         return time
 
     def generate_all_data(self):
-        self.iteration_data += 1
         return [
             self.get_medition(),
             self.get_time(),
@@ -91,6 +87,7 @@ class PocketQubeSimulator:
         'abr': None,
         'rst': None,
         'fin': None,
+        'nxt': next_iteration,
         # Data
         'ori': get_orientation,
         'alt': get_altitude,
@@ -109,9 +106,22 @@ class PocketQubeSimulator:
             self.trama['destination_address'] = address
             self.trama['instruction'] = instruction
             self.trama['message'] = self.instructions[instruction](self)
-            self.trama['lenght'] = hex(len(str(self.trama['message'])))
+            self.trama['length'] = hex(len(str(self.trama['message'])))
             self.trama['rssi'] = hex(random.randint(-120, -30))
 
             return list(self.trama.values())
 
         return 'Instruction unknown'
+
+def main():
+    pq = PocketQubeSimulator()
+    
+    while 1:
+        address = input('Address: ')
+        instruction = input('Instruction: ')
+    
+        print(f'Response: {pq.comunication(address, instruction)}\n')
+
+if __name__ == '__main__':
+    main()
+
