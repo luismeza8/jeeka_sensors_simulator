@@ -76,7 +76,7 @@ class PocketQubeSimulator:
             self.get_acelerations(), 
             self.get_orientation(),
             #generate_velocity(),
-            #generate_position(),
+            self.get_position(),
             #generate_battery(),
             #generate_phase()
         ]
@@ -87,9 +87,10 @@ class PocketQubeSimulator:
         'abr': None,
         'rst': None,
         'fin': None,
-        'nxt': next_iteration,
+        'sig': next_iteration,
         # Data
-        'ori': get_orientation,
+        'med': get_medition,
+        'gyr': get_orientation,
         'alt': get_altitude,
         'vel': get_velocity,
         'acl': get_acelerations,

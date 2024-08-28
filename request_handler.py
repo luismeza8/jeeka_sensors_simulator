@@ -25,5 +25,6 @@ while True:
     r = requests.get(url, body)
     print(r.text)
     sleep(0.2)
+    pq.next_iteration()
 
 
