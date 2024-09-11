@@ -1,4 +1,5 @@
 import random
+import struct
 
 import pandas as pd
 
@@ -29,8 +30,36 @@ class PocketQubeSimulator:
         return [gyro_x, gyro_y, gyro_z]
 
     def get_altitude(self):
-        altitude = self.simulated_data['altura'].loc[self.iteration_data]
+        #altitude = self.simulated_data['altura'].loc[self.iteration_data]
+        altitude = -12.3
+        altitude = self.convert_float_to_hex(altitude)
         return altitude
+
+
+    def convert_float_to_ieee754(self, float_value):
+        packed = struct.pack('>f', float_value)
+        return ''.join(f'{byte:08b}' for byte in packed)
+
+
+    def separate_binary(self, bin_str):
+        bytes_separados = [bin_str[i:i+8] for i in range(0, len(bin_str), 8)]
+        return bytes_separados
+
+
+    def convert_binary_bytes_to_hex(self, binary):
+        bytes_converted = []
+        for byte in binary:
+            bytes_converted.append(hex(int(byte, 2)))
+        return bytes_converted
+
+
+    def convert_float_to_hex(self, value):
+        ieee = self.convert_float_to_ieee754(value)
+        bytes_separed = self.separate_binary(ieee)
+        hexs = self.convert_binary_bytes_to_hex(bytes_separed)
+        return hexs
+
+
 
     def get_velocity(self):
         return self.simulated_data[''].loc[self.iteration_data]

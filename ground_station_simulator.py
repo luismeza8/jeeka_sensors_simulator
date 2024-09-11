@@ -1,8 +1,33 @@
 from pocketqube_simulator import PocketQubeSimulator
 from time import sleep
+import struct
 
 pq = PocketQubeSimulator()
 
+
+altitude = pq.get_altitude()
+hexs = []
+
+
+for byte in altitude:
+    byte_dec = int(byte, 16)
+    byte_bin = bin(byte_dec)[2:]
+    if len(byte_bin) < 8:
+        byte_bin = f'0{byte_bin}'
+
+    hexs.append(byte_bin)
+
+print(altitude)
+print(hexs)
+
+final = ''.join(hexs)
+print(f'final bi: {final}')
+final = int(final, 2)
+
+flotante = struct.unpack('>f', struct.pack('>I', final))[0]
+print(flotante)
+
+"""
 while 1:
 
     pq_data = pq.comunication('0xff', 'all')
@@ -50,3 +75,4 @@ while 1:
 
     pq.next_iteration()
     sleep(0.5)
+"""
