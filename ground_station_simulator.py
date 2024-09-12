@@ -8,24 +8,29 @@ pq = PocketQubeSimulator()
 altitude = pq.get_altitude()
 hexs = []
 
+class GroundStationSimulator:
+    def convert_hex_to_float(self, hex):
+        hexs = []
+        print(f'dentro hex: {hex}')
+        for byte in hex:
+            byte_dec = int(byte, 16)
+            byte_bin = bin(byte_dec)[2:]
+            if len(byte_bin) < 8:
+                byte_bin = f'0{byte_bin}'
 
-for byte in altitude:
-    byte_dec = int(byte, 16)
-    byte_bin = bin(byte_dec)[2:]
-    if len(byte_bin) < 8:
-        byte_bin = f'0{byte_bin}'
+            hexs.append(byte_bin)
+        print(f'dentro: {hexs}')
 
-    hexs.append(byte_bin)
 
-print(altitude)
-print(hexs)
+        final = ''.join(hexs)
+        print(f'final bi: {final}')
+        final = int(final, 2)
 
-final = ''.join(hexs)
-print(f'final bi: {final}')
-final = int(final, 2)
+        flotante = struct.unpack('>f', struct.pack('>I', final))[0]
+        return flotante
 
-flotante = struct.unpack('>f', struct.pack('>I', final))[0]
-print(flotante)
+gs = GroundStationSimulator()
+print(gs.convert_hex_to_float(altitude))
 
 """
 while 1:
@@ -42,7 +47,7 @@ while 1:
     pq_destination_address = pq_data[2]
     print(f'Direccion destino: {int(pq_destination_address, 0)}')
 
-    pq_length = pq_data[3]
+    pq_length = pq_data[3]return ''.join(f'{byte:08b}' for byte in packed)
     print(f'largo: {int(pq_length, 0)}')
 
     pq_rssi = pq_data[4]
