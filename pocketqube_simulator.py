@@ -6,6 +6,7 @@ import pandas as pd
 class PocketQubeSimulator:
     simulated_data = pd.read_csv('datos_corregidos.csv')
     iteration_data = 0
+    divisor = '101010101'
     trama = {
         'beginnig': hex(0xff),
         'source_address': hex(0xcc),
@@ -16,6 +17,7 @@ class PocketQubeSimulator:
         'beginnig_message': hex(0xff),
         'message': None,
         'end_message': hex(0xef),
+        'crc': None,
         'end': hex(0xef)
     }
 
@@ -131,17 +133,59 @@ class PocketQubeSimulator:
         '0x0B': generate_all_data,
     }
 
+
+    def xor_division(self, dividend, divisor):
+        dividend = list(map(int, dividend))
+        divisor = list(map(int, divisor))
+        len_divisor = len(divisor)
+
+        for i in range(len(dividend) - len_divisor + 1):
+            if dividend[i] == 1:
+                for j in range(len_divisor):
+                    dividend[i + j] ^= divisor[j]
+
+        remainder = dividend[-(len_divisor - 1):]
+        
+        return ''.join(map(str, remainder))
+
+
+    def get_binary_dividend_for_crc(self, message):
+        binary_message = ''
+        message_bytes = message.split(' ')
+        for i in message_bytes:
+            byte_dec = int(i, 16)
+            binary = bin(byte_dec)[2:]
+            binary_message += binary
+
+        dividend = binary_message + '0' * (len(self.divisor) - 1)
+
+        return dividend
+    
+
+    def calculate_crc(self, message):
+        binary = self.get_binary_dividend_for_crc(message)
+        crc = self.xor_division(binary, self.divisor)
+        return hex(int(crc, 2))
+
+
+    def fill_trama(self, instruction):
+        try:
+            if instruction in self.instructions.keys():
+                self.trama['instruction'] = instruction
+                self.trama['message'] = self.instructions[instruction](self)
+                self.trama['length'] = hex(len(str(self.trama['message'])))
+                self.trama['rssi'] = hex(random.randint(-120, -30))
+                self.trama['crc'] = self.calculate_crc(self.trama['message'])
+        except:
+            print('Instruction unknown')
+
+
     def comunication(self, address, instruction):
-        if instruction in self.instructions.keys():
-            self.trama['destination_address'] = address
-            self.trama['instruction'] = instruction
-            self.trama['message'] = self.instructions[instruction](self)
-            self.trama['length'] = hex(len(str(self.trama['message'])))
-            self.trama['rssi'] = hex(random.randint(-120, -30))
+        self.trama['destination_address'] = address
+        self.fill_trama(instruction)
 
-            return ' '.join(list(self.trama.values()))
+        return ' '.join(list(self.trama.values()))
 
-        return 'Instruction unknown'
 
 def main():
     pq = PocketQubeSimulator()
