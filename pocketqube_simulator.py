@@ -31,7 +31,7 @@ class PocketQubeSimulator:
 
     def get_altitude(self):
         #altitude = self.simulated_data['altura'].loc[self.iteration_data]
-        altitude = -12.3
+        altitude = 0.012345
         altitude_in_hex = self.convert_float_to_hex(altitude)
         return altitude_in_hex
 

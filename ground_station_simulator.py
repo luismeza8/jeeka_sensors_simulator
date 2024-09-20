@@ -1,5 +1,4 @@
 from pocketqube_simulator import PocketQubeSimulator
-from time import sleep
 import struct
 
 pq = PocketQubeSimulator()
@@ -11,19 +10,19 @@ hexs = []
 class GroundStationSimulator:
     def convert_hex_to_float(self, hex):
         hexs = []
-        print(f'dentro hex: {hex}')
         for byte in hex:
             byte_dec = int(byte, 16)
             byte_bin = bin(byte_dec)[2:]
+            
+            # si el byte empieza por ceros python no los cuenta, entonces lo siguiente agrega esos ceros faltantes 
             if len(byte_bin) < 8:
-                byte_bin = f'0{byte_bin}'
+                difference = 8 - len(byte_bin)
+                zeros = '0' * difference
+                byte_bin = f'{zeros}{byte_bin}'
 
             hexs.append(byte_bin)
-        print(f'dentro: {hexs}')
-
 
         final = ''.join(hexs)
-        print(f'final bi: {final}')
         final = int(final, 2)
 
         flotante = struct.unpack('>f', struct.pack('>I', final))[0]
