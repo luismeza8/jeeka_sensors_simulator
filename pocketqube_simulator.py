@@ -33,7 +33,7 @@ class PocketQubeSimulator:
         #altitude = self.simulated_data['altura'].loc[self.iteration_data]
         altitude = 0.012345
         altitude_in_hex = self.convert_float_to_hex(altitude)
-        return altitude_in_hex
+        return ' '.join(altitude_in_hex)
 
 
     def convert_float_to_ieee754(self, float_value):
@@ -118,17 +118,17 @@ class PocketQubeSimulator:
         'fin': None,
         'sig': next_iteration,
         # Data
-        'med': get_medition,
-        'gyr': get_orientation,
-        'alt': get_altitude,
-        'vel': get_velocity,
-        'acl': get_acelerations,
-        'tem': get_temperature,
-        'pre': get_pressure,
-        'pos': get_position,
-        'bat': get_battery,
-        'pha': get_phase,
-        'all': generate_all_data,
+        '0x01': get_medition,
+        '0x02': get_orientation,
+        '0x03': get_altitude,
+        '0x04': get_velocity,
+        '0x05': get_acelerations,
+        '0x06': get_temperature,
+        '0x07': get_pressure,
+        '0x08': get_position,
+        '0x09': get_battery,
+        '0x0A': get_phase,
+        '0x0B': generate_all_data,
     }
 
     def comunication(self, address, instruction):
@@ -139,7 +139,7 @@ class PocketQubeSimulator:
             self.trama['length'] = hex(len(str(self.trama['message'])))
             self.trama['rssi'] = hex(random.randint(-120, -30))
 
-            return list(self.trama.values())
+            return ' '.join(list(self.trama.values()))
 
         return 'Instruction unknown'
 
