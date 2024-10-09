@@ -149,7 +149,7 @@ class PocketQubeSimulator:
         return ''.join(map(str, remainder))
 
 
-    def get_binary_dividend_for_crc(self, message):
+    def get_binary_dividend_by_crc(self, message):
         binary_message = ''
         message_bytes = message.split(' ')
         for i in message_bytes:
@@ -157,7 +157,6 @@ class PocketQubeSimulator:
             binary = bin(byte_dec)[2:]
 
             if len(binary) < 8:
-                print('yeap')
                 difference = 8 - len(binary)
                 zeros = '0' * difference
                 binary = f'{zeros}{binary}'
@@ -169,9 +168,10 @@ class PocketQubeSimulator:
     
 
     def calculate_crc(self, message):
-        binary = self.get_binary_dividend_for_crc(message)
-        print(f'mensaje binario: {binary}')
+        binary = self.get_binary_dividend_by_crc(message)
+        print(f'pq: mensaje binario: {binary}')
         crc = self.xor_division(binary, self.divisor)
+        print(f'pq: crc antes de hex: {crc}')
         return hex(int(crc, 2))
 
 
@@ -180,12 +180,13 @@ class PocketQubeSimulator:
             if instruction in self.instructions.keys():
                 self.trama['instruction'] = instruction
                 self.trama['message'] = self.instructions[instruction](self)
-                print('mensaje en pq ' + self.trama['message'])
+                print('pq: mensaje en pq ' + self.trama['message'])
                 self.trama['length'] = hex(len(str(self.trama['message'])))
                 self.trama['rssi'] = hex(random.randint(-120, -30))
                 self.trama['crc'] = self.calculate_crc(self.trama['message'])
+                print(f'pq: crc: {self.trama["crc"]}')
         except:
-            print('Instruction unknown')
+            print('pq: Instruction unknown')
 
 
     def comunication(self, address, instruction):
@@ -202,7 +203,7 @@ def main():
         address = input('Address: ')
         instruction = input('Instruction: ')
     
-        print(f'Response: {pq.comunication(address, instruction)}\n')
+        print(f'pq: Response: {pq.comunication(address, instruction)}\n')
 
 if __name__ == '__main__':
     main()

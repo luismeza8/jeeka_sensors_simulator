@@ -55,8 +55,9 @@ class GroundStationSimulator:
     def calculete_crc(self):
         trama = self.get_all_info_from_pocketqube()
         message = self.get_message_from_trama(trama)
-        print(f'mensaje: {message}')
+        print(f'gs: mensaje: {message}')
         binary_message = ''
+
         for byte in message:
             byte_dec = int(byte, 16)
             byte_bin = bin(byte_dec)[2:]
@@ -68,15 +69,25 @@ class GroundStationSimulator:
                 byte_bin = f'{zeros}{byte_bin}'
 
             binary_message += byte_bin
-        print(f'binario del mensaje: {binary_message}')
+
+        print(f'gs: binario del mensaje: {binary_message}')
 
         crc = self.get_crc(trama)
-        print(f'crc: {crc}')
+        print(f'gs: crc: {crc}')
         
-        dividend = binary_message + bin(int(crc, 16))[2:]
-        print(f'dividendo: {dividend}')
+        print("gs antes de los 0: " + bin(int(crc, 16))[2:])
+        crc_bin = bin(int(crc, 16))[2:]
+        if len(crc_bin) < 8:
+            difference = 8 - len(crc_bin)
+            zeros = '0' * difference
+            crc_bin = f'{zeros}{crc_bin}'
+            
+        print(f'gs: crc bin: {crc_bin}')
+        dividend = binary_message + crc_bin
+
+        print(f'gs: dividendo: {dividend}')
         result = pq.xor_division(dividend, self.divisor)
-        print(f'resultado: {result}')
+        print(f'gs: resultado: {result}')
 
 
 gs = GroundStationSimulator()
