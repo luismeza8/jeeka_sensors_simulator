@@ -14,9 +14,9 @@ class PocketQubeSimulator:
         'length': None,
         'rssi': None,
         'instruction': None,
-        'beginnig_message': hex(0xff),
+        'beginnig_message': hex(0xfe),
         'message': None,
-        'end_message': hex(0xef),
+        'end_message': hex(0xfd),
         'crc': None,
         'end': hex(0xef)
     }
@@ -155,6 +155,12 @@ class PocketQubeSimulator:
         for i in message_bytes:
             byte_dec = int(i, 16)
             binary = bin(byte_dec)[2:]
+
+            if len(binary) < 8:
+                print('yeap')
+                difference = 8 - len(binary)
+                zeros = '0' * difference
+                binary = f'{zeros}{binary}'
             binary_message += binary
 
         dividend = binary_message + '0' * (len(self.divisor) - 1)
@@ -164,6 +170,7 @@ class PocketQubeSimulator:
 
     def calculate_crc(self, message):
         binary = self.get_binary_dividend_for_crc(message)
+        print(f'mensaje binario: {binary}')
         crc = self.xor_division(binary, self.divisor)
         return hex(int(crc, 2))
 
@@ -173,6 +180,7 @@ class PocketQubeSimulator:
             if instruction in self.instructions.keys():
                 self.trama['instruction'] = instruction
                 self.trama['message'] = self.instructions[instruction](self)
+                print('mensaje en pq ' + self.trama['message'])
                 self.trama['length'] = hex(len(str(self.trama['message'])))
                 self.trama['rssi'] = hex(random.randint(-120, -30))
                 self.trama['crc'] = self.calculate_crc(self.trama['message'])

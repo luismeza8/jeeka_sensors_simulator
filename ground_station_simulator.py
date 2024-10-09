@@ -8,8 +8,12 @@ altitude = pq.get_altitude()
 hexs = []
 
 class GroundStationSimulator:
+    divisor = '101010101'
+
+
     def convert_hex_to_float(self, hex):
         hexs = []
+        hex = hex.split(' ')
         for byte in hex:
             byte_dec = int(byte, 16)
             byte_bin = bin(byte_dec)[2:]
@@ -28,8 +32,55 @@ class GroundStationSimulator:
         flotante = struct.unpack('>f', struct.pack('>I', final))[0]
         return flotante
 
+    def get_all_info_from_pocketqube(self):
+        print(pq.comunication('0xff', '0x03'))
+        return pq.comunication('0xff', '0x03').split(' ')
+
+    def get_message_from_trama(self, trama):
+        try:
+            start_index = trama.index('0xfe')
+            end_index = trama.index('0xfd')
+
+            if end_index > start_index:
+                return trama[start_index + 1:end_index]
+            else:
+                return []
+        except ValueError:
+            return []
+
+    def get_crc(self, trama):
+        return trama[len(trama) - 2]
+
+
+    def calculete_crc(self):
+        trama = self.get_all_info_from_pocketqube()
+        message = self.get_message_from_trama(trama)
+        print(f'mensaje: {message}')
+        binary_message = ''
+        for byte in message:
+            byte_dec = int(byte, 16)
+            byte_bin = bin(byte_dec)[2:]
+            
+            # si el byte empieza por ceros python no los cuenta, entonces lo siguiente agrega esos ceros faltantes 
+            if len(byte_bin) < 8:
+                difference = 8 - len(byte_bin)
+                zeros = '0' * difference
+                byte_bin = f'{zeros}{byte_bin}'
+
+            binary_message += byte_bin
+        print(f'binario del mensaje: {binary_message}')
+
+        crc = self.get_crc(trama)
+        print(f'crc: {crc}')
+        
+        dividend = binary_message + bin(int(crc, 16))[2:]
+        print(f'dividendo: {dividend}')
+        result = pq.xor_division(dividend, self.divisor)
+        print(f'resultado: {result}')
+
+
 gs = GroundStationSimulator()
-print(gs.convert_hex_to_float(altitude))
+print(gs.calculete_crc())
 
 """
 while 1:
